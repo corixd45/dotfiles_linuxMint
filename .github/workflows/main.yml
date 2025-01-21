@@ -1,0 +1,29 @@
+name: Linux Mint 22 - RustDesk
+
+on:
+  workflow_dispatch:  # Ejecución manual desde la pestaña "Actions"
+
+jobs:
+  run-rustdesk:
+    name: Tareas en Linux Mint 22
+    runs-on: [self-hosted, linux-mint-22]  # Requiere un runner autoalojado
+    timeout-minutes: 360  # Máximo permitido por GitHub
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # Mejor práctica de seguridad
+
+      - name: Instalar RustDesk
+        run: |
+          # Descarga desde la fuente oficial
+          wget https://github.com/rustdesk/rustdesk/releases/download/1.2.3/rustdesk-1.2.3-x86_64.deb
+          sudo dpkg -i rustdesk-1.2.3-x86_64.deb
+          sudo apt --fix-broken install -y
+
+      - name: Iniciar RustDesk (modo servidor)
+        run: |
+          rustdesk --server
+        env:
+          RUSTDESK_PASSWORD: ${{ secrets.RUSTDESK_PASSWORD }}  # Usa GitHub Secrets
